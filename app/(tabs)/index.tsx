@@ -1,70 +1,158 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {FlatList, Image, StyleSheet, Text, TextInput, View} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
+import ThemedText from "@/components/ThemedText";
+import {useThemeColors} from "@/hooks/useThemeColors";
+import StatsCard from "@/components/StatsCard";
+import {useState} from "react";
+import FoodCard from "@/components/FoodCard";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+type FoodType = {
+    name: string;
+    quantity: number;
+    expiredAt: string;
+    type: {
+        color: string,
+        title: string
+    }[];
+    image?: string
+};
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+export default function Index() {
+
+    const [searchText, setSearchText] = useState("");
+
+    const colors = useThemeColors();
+
+    const [foods, setFoods] = useState<FoodType[]>([
+        {
+            name: "Carotte",
+            quantity: 4,
+            expiredAt: "27/10/2024",
+            type: [
+                {
+                    title: "Légumé",
+                    color: "#20BF55"
+                },
+                {
+                    title: "Sain",
+                    color: "#20BF55"
+                }
+            ],
+            image: "https://www.primeale.fr/app/uploads/2022/03/primeale-les-carottes-vrac.jpg"
+        },
+        {
+            name: "Tomate",
+            quantity: 4,
+            expiredAt: "27/10/2024",
+            type: [
+                {
+                    title: "Légumé",
+                    color: "#20BF55"
+                },
+                {
+                    title: "Sain",
+                    color: "#20BF55"
+                }
+            ]
+        },
+        {
+            name: "Pomme de terre",
+            quantity: 4,
+            expiredAt: "27/10/2024",
+            type: [
+                {
+                    title: "Légumé",
+                    color: "#20BF55"
+                },
+                {
+                    title: "Sain",
+                    color: "#20BF55"
+                }
+            ]
+        },
+        {
+            name: "Aubergine",
+            quantity: 4,
+            expiredAt: "27/10/2024",
+            type: [
+                {
+                    title: "Légumé",
+                    color: "#20BF55"
+                },
+                {
+                    title: "Sain",
+                    color: "#20BF55"
+                }
+            ]
+        },
+
+    ]);
+
+    const filteredFoods = foods.filter(food =>
+        food.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+
+    return (
+        <SafeAreaView style={{flex: 1}}>
+            {/* Top container */}
+            <View style={[style.topContainer, {backgroundColor: colors.tint}]}>
+                <ThemedText color="white" variant="title">Bonjour, John Doe</ThemedText>
+                <ThemedText color="white60">Que voulez-vous faire aujourd'hui ?</ThemedText>
+            </View>
+
+            {/* Mes aliments */}
+            <View style={[style.bodyContainer, {flex: 1}]}>
+                <ThemedText variant="title" styles={{fontWeight: "bold"}}>Mes aliments</ThemedText>
+                <View style={style.statContainer}>
+                    <StatsCard title="Total d'aliments" number={foods.length} image={require('@/assets/images/carrot.png')} />
+                    <StatsCard title="Total d'aliments" number={foods.length} image={require('@/assets/images/carrot.png')} />
+                </View>
+
+                {/* Rechercher */}
+                <View style={style.inputContainer}>
+                    <ThemedText>Rechercher</ThemedText>
+                    <TextInput placeholder="Pomme de terre" style={style.input} value={searchText} onChangeText={setSearchText} />
+                </View>
+
+                {/* Liste des aliments */}
+                <FlatList
+                    data={filteredFoods}
+                    numColumns={1}
+                    contentContainerStyle={{gap: 10, paddingBottom: 20, marginTop: 10}}
+                    renderItem={({ item }) => (
+                        <FoodCard item={item}  />
+                    )}
+                    keyExtractor={(item) => item.name}
+                />
+            </View>
+        </SafeAreaView>
+    );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+const style = StyleSheet.create({
+    topContainer: {
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+    },
+    bodyContainer: {
+        paddingVertical: 30,
+        paddingHorizontal: 20,
+    },
+    statContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
+        gap: 20,
+        marginTop: 20
+    },
+    inputContainer: {
+        marginTop: 30
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "rgba(0, 0, 0, 0.2)",
+        borderRadius: 5,
+        padding: 5
+    }
+})
+

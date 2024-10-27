@@ -1,9 +1,8 @@
-// import type { HttpContext } from '@adonisjs/core/http'
+// @ts-ignore
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class FoodsController {
-  index() {
-    return {
-      message: 'Voici vos aliments',
-    }
+  async create({ request, response, auth }: HttpContextContract){
+    const payload = await request.validateUsing()
   }
 }

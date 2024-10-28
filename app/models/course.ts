@@ -8,6 +8,9 @@ export default class Course extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
+  @column()
+  declare userId: number
+
   @hasMany(() => Food)
   declare foods: HasMany<typeof Food>
 
@@ -19,4 +22,7 @@ export default class Course extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @column()
+  declare price: number
 }

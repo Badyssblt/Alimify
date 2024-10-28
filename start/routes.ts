@@ -24,8 +24,8 @@ router
 router
   .group(() => {
     router.post('/', [CoursesController, 'create'])
-    router.get('/', [CoursesController, 'index'])
-    router.get('/:id', [CoursesController, 'show'])
+    router.get('/', [CoursesController, 'getCollection'])
+    router.get('/:id', [CoursesController, 'get'])
   })
   .prefix('/api/courses')
 

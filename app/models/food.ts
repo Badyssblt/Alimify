@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import Course from '#models/course'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
@@ -27,6 +27,12 @@ export default class Food extends BaseModel {
 
   @column()
   declare courseId: number
+
+  @column()
+  declare barCode: number
+
+  @column()
+  declare price: number
 
   @belongsTo(() => Course)
   declare course: BelongsTo<typeof Course>

@@ -12,7 +12,7 @@ export default function StatsCard({title, number, image}: Props)
 {
     return (
         <View style={styles.container}>
-            <Image source={image}/>
+            <Image source={image} style={styles.image}/>
             <ThemedText >{title}</ThemedText>
             <ThemedText variant="title" styles={{fontWeight: "bold"}}>{number}</ThemedText>
         </View>
@@ -28,6 +28,11 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         gap: 5,
+        backgroundColor: "white"
 
+    },
+    image: {
+        width: 40,
+        height: 40
     }
 })

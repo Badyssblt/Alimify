@@ -1,65 +1,19 @@
-import { FlatList, StyleSheet, TextInput, View, ScrollView } from "react-native";
+// Index.js
+import { FlatList, StyleSheet, TextInput, View, ScrollView, Button } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemedText from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import StatsCard from "@/components/StatsCard";
-import { useState } from "react";
+import useFoods from "@/hooks/useFoods";
+import {useState} from "react";
 import FoodCard from "@/components/FoodCard";
-
-type FoodType = {
-    name: string;
-    quantity: number;
-    expiredAt: string;
-    type: {
-        color: string,
-        title: string
-    }[];
-    image?: string;
-};
+import {useFoodContext} from "@/context/FoodContext";
 
 export default function Index() {
     const [searchText, setSearchText] = useState("");
     const colors = useThemeColors();
 
-    const [foods, setFoods] = useState<FoodType[]>([
-        {
-            name: "Carotte",
-            quantity: 4,
-            expiredAt: "27/10/2024",
-            type: [
-                { title: "Légumé", color: "#20BF55" },
-                { title: "Sain", color: "#20BF55" }
-            ],
-            image: "https://www.primeale.fr/app/uploads/2022/03/primeale-les-carottes-vrac.jpg"
-        },
-        {
-            name: "Tomate",
-            quantity: 4,
-            expiredAt: "27/10/2024",
-            type: [
-                { title: "Légumé", color: "#20BF55" },
-                { title: "Sain", color: "#20BF55" }
-            ]
-        },
-        {
-            name: "Pomme de terre",
-            quantity: 4,
-            expiredAt: "27/10/2024",
-            type: [
-                { title: "Légumé", color: "#20BF55" },
-                { title: "Sain", color: "#20BF55" }
-            ]
-        },
-        {
-            name: "Aubergine",
-            quantity: 4,
-            expiredAt: "27/10/2024",
-            type: [
-                { title: "Légumé", color: "#20BF55" },
-                { title: "Sain", color: "#20BF55" }
-            ]
-        },
-    ]);
+    const { foods, courseCount, loading, error, refetch } = useFoodContext();
 
     const filteredFoods = foods.filter(food =>
         food.name.toLowerCase().includes(searchText.toLowerCase())
@@ -67,38 +21,52 @@ export default function Index() {
 
     return (
         <SafeAreaView>
-            {/* Top container */}
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
                 <View style={[style.topContainer, { backgroundColor: colors.tint }]}>
                     <ThemedText color="white" variant="title">Bonjour, John Doe</ThemedText>
                     <ThemedText color="white60">Que voulez-vous faire aujourd'hui ?</ThemedText>
                 </View>
 
-                {/* Mes aliments */}
                 <View style={[style.bodyContainer]}>
                     <ThemedText variant="title" styles={{ fontWeight: "bold" }}>Mes aliments</ThemedText>
                     <View style={style.statContainer}>
-                        <StatsCard title="Total d'aliments" number={foods.length} image={require('@/assets/images/carrot.png')} />
-                        <StatsCard title="Total d'aliments" number={foods.length} image={require('@/assets/images/carrot.png')} />
+                        <StatsCard title="Total d'aliments" number={foods.length}
+                                   image={require('@/assets/images/carrot.png')} />
+                        <StatsCard title="Nombre de courses" number={courseCount}
+                                   image={require('@/assets/images/cart.png')} />
                     </View>
 
                     {/* Rechercher */}
                     <View style={style.inputContainer}>
                         <ThemedText>Rechercher</ThemedText>
-                        <TextInput placeholder="Pomme de terre" style={style.input} value={searchText} onChangeText={setSearchText} />
+                        <TextInput
+                            placeholder="Pomme de terre"
+                            style={style.input}
+                            value={searchText}
+                            onChangeText={setSearchText}
+                        />
                     </View>
 
                     {/* Liste des aliments */}
-                    <FlatList
-                        data={filteredFoods}
-                        numColumns={1}
-                        contentContainerStyle={{ gap: 10, marginTop: 10 }}
-                        renderItem={({ item }) => (
-                            <FoodCard item={item} />
-                        )}
-                        keyExtractor={(item) => item.name}
-                        scrollEnabled={false}  // Disable FlatList scrolling
-                    />
+                    {loading ? (
+                        <ThemedText>Chargement des aliments...</ThemedText>
+                    ) : error ? (
+                        <ThemedText style={style.errorText}>Erreur: {error.message}</ThemedText>
+                    ) : filteredFoods.length > 0 ? (
+                        <FlatList
+                            data={filteredFoods}
+                            numColumns={1}
+                            contentContainerStyle={{ gap: 10, marginTop: 10 }}
+                            renderItem={({ item }) => (
+                                <FoodCard item={item} />
+                            )}
+                            keyExtractor={(item) => item.id.toString()}
+                            scrollEnabled={false}
+                        />
+                    ) : (
+                        <ThemedText styles={{ textAlign: "center", marginTop: 20, fontWeight: "bold" }} >Aucun aliment trouvé.</ThemedText>
+                    )}
+
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -118,15 +86,18 @@ const style = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         gap: 20,
-        marginTop: 20
+        marginTop: 20,
     },
     inputContainer: {
-        marginTop: 30
+        marginTop: 30,
     },
     input: {
         borderWidth: 1,
         borderColor: "rgba(0, 0, 0, 0.2)",
         borderRadius: 5,
-        padding: 5
-    }
+        padding: 5,
+    },
+    errorText: {
+        color: 'red',
+    },
 });

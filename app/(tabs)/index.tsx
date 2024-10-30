@@ -5,12 +5,14 @@ import ThemedText from "@/components/ThemedText";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import StatsCard from "@/components/StatsCard";
 import useFoods from "@/hooks/useFoods";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import FoodCard from "@/components/FoodCard";
 import {useFoodContext} from "@/context/FoodContext";
+import axiosInstance from "@/app/api/axiosInstance";
 
 export default function Index() {
     const [searchText, setSearchText] = useState("");
+    const [user, setUser] = useState();
     const colors = useThemeColors();
 
     const { foods, courseCount, loading, error, refetch } = useFoodContext();
@@ -19,11 +21,25 @@ export default function Index() {
         food.name.toLowerCase().includes(searchText.toLowerCase())
     );
 
+    const me = async () => {
+        try {
+            const response = await axiosInstance.get('/api/users/me');
+            setUser(response.data)
+            console.log(user)
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
+    useEffect(() => {
+        me()
+    }, []);
+
     return (
         <SafeAreaView>
             <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
                 <View style={[style.topContainer, { backgroundColor: colors.tint }]}>
-                    <ThemedText color="white" variant="title">Bonjour, John Doe</ThemedText>
+                    <ThemedText color="white" variant="title">Bonjour, {user &&  user.name }</ThemedText>
                     <ThemedText color="white60">Que voulez-vous faire aujourd'hui ?</ThemedText>
                 </View>
 

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const BASE_URL = "https://5662-2a01-e0a-803-e070-8d5b-a4-c5c-ab04.ngrok-free.app"
+const BASE_URL = "https://9097-2a01-e0a-803-e070-a4cc-e3c2-a0c3-5810.ngrok-free.app"
 
 
 const getToken = async () => {
